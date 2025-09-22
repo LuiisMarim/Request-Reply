@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./project/infrastructure/vision/face_detection_"
+    ]
+}

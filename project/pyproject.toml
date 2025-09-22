@@ -1,0 +1,26 @@
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "W", "C", "N"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = 3.9
+strict = true
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+addopts = "-q --cov=project --cov-report=term-missing"
+
+[tool.coverage.run]
+branch = true
+source = ["project"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

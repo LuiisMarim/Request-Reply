@@ -1,0 +1,5 @@
+batch_size: 16
+resolution: 384
+amp: true
+num_workers: 4
+cache_dir: "./.cache/medium"

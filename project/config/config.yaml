@@ -1,0 +1,23 @@
+# Configuração principal do pipeline
+data:
+  raw_dir: ${DATASET_RAW}
+  processed_dir: ${DATASET_PROCESSED}
+  features_dir: ${DATASET_FEATURES}
+  versioning: true
+
+models:
+  dir: ${MODELS_DIR}
+  save_format: "pt"
+
+artifacts:
+  dir: ${ARTIFACTS_DIR}
+  reports: "${ARTIFACTS_DIR}/reports"
+  figures: "${ARTIFACTS_DIR}/figures"
+
+logging:
+  level: ${LOG_LEVEL}
+  run_id: ${RUN_ID}
+
+execution:
+  profile: ${PROFILE}
+  seed: ${GLOBAL_SEED}

@@ -1,0 +1,5 @@
+batch_size: 8
+resolution: 224
+amp: false
+num_workers: 2
+cache_dir: "./.cache/low"

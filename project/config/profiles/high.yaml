@@ -1,0 +1,5 @@
+batch_size: 32
+resolution: 512
+amp: true
+num_workers: 8
+cache_dir: "./.cache/high"
