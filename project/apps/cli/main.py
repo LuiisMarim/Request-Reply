@@ -14,6 +14,8 @@ from application.dto.extract_features_dto import ExtractFeaturesRequest
 from application.dto.train_dto import TrainRequest
 from application.dto.infer_dto import InferRequest
 from application.dto.benchmark_dto import BenchmarkRequest
+from infrastructure.data.validators import DataValidator
+from infrastructure.persistence.cache import CacheManager
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +73,12 @@ def main() -> None:
             if not args.input.strip() or not args.out.strip() or not args.report.strip():
                 raise ValueError("Parâmetros inválidos para validate-data.")
             req = ValidateDataRequest(args.input, args.out, args.report)
-            res = ValidateDataUseCase().execute(req)
+            repository = CacheManager(cache_dir=args.out)
+            validator = DataValidator()
+            res = ValidateDataUseCase(repository, validator).execute(req)
             print(f"✅ Dados validados. Relatório: {res.report_path}")
             logger.info("Validação concluída com relatório em %s", res.report_path)
-
+            
         elif args.command == "extract-features":
             if not args.input.strip() or not args.out.strip():
                 raise ValueError("Parâmetros inválidos para extract-features.")
