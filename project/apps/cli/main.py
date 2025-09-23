@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import logging
+import sys
 
 from application.use_cases.validate_data import ValidateDataUseCase
 from application.use_cases.extract_features import ExtractFeaturesUseCase
@@ -13,8 +15,20 @@ from application.dto.train_dto import TrainRequest
 from application.dto.infer_dto import InferRequest
 from application.dto.benchmark_dto import BenchmarkRequest
 
+logger = logging.getLogger(__name__)
+
 
 def main() -> None:
+    """
+    CLI para orquestração do pipeline TEA Biomarker.
+
+    Subcomandos disponíveis:
+      - validate-data
+      - extract-features
+      - train
+      - infer
+      - benchmark
+    """
     parser = argparse.ArgumentParser(description="CLI do pipeline TEA Biomarker")
     subparsers = parser.add_subparsers(dest="command")
 
@@ -52,40 +66,61 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.command == "validate-data":
-        req = ValidateDataRequest(args.input, args.out, args.report)
-        res = ValidateDataUseCase().execute(req)
-        print(f"✅ Dados validados. Relatório: {res.report_path}")
+    try:
+        if args.command == "validate-data":
+            if not args.input.strip() or not args.out.strip() or not args.report.strip():
+                raise ValueError("Parâmetros inválidos para validate-data.")
+            req = ValidateDataRequest(args.input, args.out, args.report)
+            res = ValidateDataUseCase().execute(req)
+            print(f"✅ Dados validados. Relatório: {res.report_path}")
+            logger.info("Validação concluída com relatório em %s", res.report_path)
 
-    elif args.command == "extract-features":
-        req = ExtractFeaturesRequest(args.input, args.out, args.profile)
-        res = ExtractFeaturesUseCase().execute(req)
-        print(f"✅ Features extraídas em {res.output_path}")
+        elif args.command == "extract-features":
+            if not args.input.strip() or not args.out.strip():
+                raise ValueError("Parâmetros inválidos para extract-features.")
+            req = ExtractFeaturesRequest(args.input, args.out, args.profile)
+            res = ExtractFeaturesUseCase().execute(req)
+            print(f"✅ Features extraídas em {res.output_path}")
+            logger.info("Extração de features concluída em %s", res.output_path)
 
-    elif args.command == "train":
-        req = TrainRequest(
-            features_path=args.features,
-            models_dir=args.models_dir,
-            protocol=args.protocol,
-            profile=args.profile,
-            enable_xai=args.enable_xai,
-            audit_fairness=args.audit_fairness,
-        )
-        res = TrainUseCase().execute(req)
-        print(f"✅ Treino concluído. Modelos em {res.models_dir}")
+        elif args.command == "train":
+            if not args.features.strip() or not args.models_dir.strip():
+                raise ValueError("Parâmetros inválidos para train.")
+            req = TrainRequest(
+                features_path=args.features,
+                models_dir=args.models_dir,
+                protocol=args.protocol,
+                profile=args.profile,
+                enable_xai=args.enable_xai,
+                audit_fairness=args.audit_fairness,
+            )
+            res = TrainUseCase().execute(req)
+            print(f"✅ Treino concluído. Modelos em {res.models_dir}")
+            logger.info("Treinamento concluído. Modelos em %s", res.models_dir)
 
-    elif args.command == "infer":
-        req = InferRequest(args.input, args.models_dir, args.out)
-        res = InferUseCase().execute(req)
-        print(f"✅ Inferência concluída. Relatórios em {res.output_dir}")
+        elif args.command == "infer":
+            if not args.input.strip() or not args.models_dir.strip() or not args.out.strip():
+                raise ValueError("Parâmetros inválidos para infer.")
+            req = InferRequest(args.input, args.models_dir, args.out)
+            res = InferUseCase().execute(req)
+            print(f"✅ Inferência concluída. Relatórios em {res.output_dir}")
+            logger.info("Inferência concluída. Relatórios em %s", res.output_dir)
 
-    elif args.command == "benchmark":
-        req = BenchmarkRequest(args.profile, args.iterations)
-        res = BenchmarkUseCase().execute(req)
-        print(f"✅ Benchmark concluído. Tempo médio: {res.avg_time:.3f}s")
+        elif args.command == "benchmark":
+            if args.iterations <= 0 or not args.profile.strip():
+                raise ValueError("Parâmetros inválidos para benchmark.")
+            req = BenchmarkRequest(args.profile, args.iterations)
+            res = BenchmarkUseCase().execute(req)
+            print(f"✅ Benchmark concluído. Tempo médio: {res.avg_time:.3f}s")
+            logger.info("Benchmark concluído. Tempo médio: %.3fs", res.avg_time)
 
-    else:
-        parser.print_help()
+        else:
+            parser.print_help()
+
+    except Exception as e:
+        logger.exception("Falha crítica na execução do comando: %s", str(e))
+        print(f"❌ Falha: {str(e)}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
