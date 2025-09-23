@@ -1,0 +1,53 @@
+# ===================================
+# Arquivos de ambiente virtual
+# ===================================
+.venv/
+venv/
+ENV/
+env/
+*.pyenv
+
+# ===================================
+# Cache e artefatos do Python
+# ===================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# ===================================
+# Logs e temporários
+# ===================================
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# ===================================
+# Arquivos de IDE/Editor
+# ===================================
+.vscode/
+.idea/
+*.iml
+
+# ===================================
+# Jupyter Notebook checkpoints
+# ===================================
+.ipynb_checkpoints/
+
+# ===================================
+# Configurações do sistema operacional
+# ===================================
+.DS_Store
+Thumbs.db
+
+# ===================================
+# Dependências
+# ===================================
+# nunca subir pacotes instalados, só requirements.txt
+*.egg-info/
+dist/
+build/
+.eggs/
