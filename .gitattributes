@@ -1,2 +1,4 @@
 project/OpenFace/**/*.dll filter=lfs diff=lfs merge=lfs -text
 project/OpenFace/**/*.dat filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.dat filter=lfs diff=lfs merge=lfs -text
