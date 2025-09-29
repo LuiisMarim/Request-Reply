@@ -51,3 +51,44 @@ Thumbs.db
 dist/
 build/
 .eggs/
+
+# Arquivos do OpenFace/FeatureExtraction
+*.csv
+*.txt
+*.hog
+*.avi
+*.mp4
+*.wmv
+
+# Arquivos temporários e de output
+output/*
+processed/*
+temp/*
+tmp/*
+
+# Arquivos de dados extraídos
+*.dat
+*.mat
+*.json
+
+# Logs e debug
+*.log
+debug/
+logs/
+
+# Backups e arquivos do sistema
+*.bak
+*.tmp
+*.swp
+*~
+Thumbs.db
+.DS_Store
+
+# Diretórios de resultados
+results/
+exports/
+features/
+
+# Configurações específicas do projeto
+config.ini
+settings/
