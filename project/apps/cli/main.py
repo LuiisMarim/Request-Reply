@@ -15,7 +15,7 @@ from application.dto.train_dto import TrainRequest
 from application.dto.infer_dto import InferRequest
 from application.dto.benchmark_dto import BenchmarkRequest
 from infrastructure.data.validators import DataValidator
-from infrastructure.persistence.cache import CacheManager
+from infrastructure.vision.au_extractor_openface import OpenFaceAUExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +73,8 @@ def main() -> None:
             if not args.input.strip() or not args.out.strip() or not args.report.strip():
                 raise ValueError("Parâmetros inválidos para validate-data.")
             req = ValidateDataRequest(args.input, args.out, args.report)
-            repository = CacheManager(cache_dir=args.out)
             validator = DataValidator()
-            res = ValidateDataUseCase(repository, validator).execute(req)
+            res = ValidateDataUseCase(None, validator).execute(req)
             print(f"✅ Dados validados. Relatório: {res.report_path}")
             logger.info("Validação concluída com relatório em %s", res.report_path)
             
@@ -83,9 +82,12 @@ def main() -> None:
             if not args.input.strip() or not args.out.strip():
                 raise ValueError("Parâmetros inválidos para extract-features.")
             req = ExtractFeaturesRequest(args.input, args.out, args.profile)
-            res = ExtractFeaturesUseCase().execute(req)
-            print(f"✅ Features extraídas em {res.output_path}")
-            logger.info("Extração de features concluída em %s", res.output_path)
+            extractor = OpenFaceAUExtractor(
+                openface_bin=r"C:\Users\luisa\OneDrive\Documentos\Request-Reply\project\OpenFace\FeatureExtraction.exe"
+            )
+            res = ExtractFeaturesUseCase(extractor).execute(req)
+            print(f"✅ Features extraídas em {res.features_dir}")
+            logger.info("Extração de features concluída em %s", res.features_dir)
 
         elif args.command == "train":
             if not args.features.strip() or not args.models_dir.strip():

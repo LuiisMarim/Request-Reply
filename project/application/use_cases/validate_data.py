@@ -1,12 +1,12 @@
 import os
 import logging
-from typing import Protocol
+from typing import Protocol, runtime_checkable 
 from application.dto.validate_data_dto import ValidateDataRequest, ValidateDataResponse
 from domain.services.repository import IDataRepository
 
 logger = logging.getLogger(__name__)
 
-
+@runtime_checkable
 class IDataValidator(Protocol):
     """Protocolo para validador de dados (infrastructure.data.validators)."""
 
@@ -32,12 +32,12 @@ class ValidateDataUseCase:
     Orquestra a validação de dados utilizando um repositório de dados e um validador.
     """
 
-    def __init__(self, repository: IDataRepository, validator: IDataValidator):
-        if not isinstance(repository, IDataRepository):
+    def __init__(self, repository: IDataRepository = None, validator: IDataValidator = None):
+        if repository is not None and not isinstance(repository, IDataRepository):
             logger.error("Repositório inválido fornecido: %s", type(repository))
             raise ValueError("O parâmetro 'repository' deve implementar IDataRepository.")
 
-        if not isinstance(validator, IDataValidator):
+        if validator is not None and not isinstance(validator, IDataValidator):
             logger.error("Validador inválido fornecido: %s", type(validator))
             raise ValueError("O parâmetro 'validator' deve implementar IDataValidator.")
 

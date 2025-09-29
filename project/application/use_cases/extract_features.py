@@ -1,10 +1,10 @@
 import logging
 from application.dto.extract_features_dto import ExtractFeaturesRequest, ExtractFeaturesResponse
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 logger = logging.getLogger(__name__)
 
-
+@runtime_checkable
 class IFeatureExtractor(Protocol):
     """Protocolo para extrator de features multimodais."""
 
@@ -60,9 +60,9 @@ class ExtractFeaturesUseCase:
 
         try:
             success = self._extractor.extract(
-                input_dir=request.input_dir,
-                output_dir=request.output_dir,
-                profile=request.profile,
+                input_dir = request.input_dir,
+                output_dir = request.output_dir,
+                profile = request.profile,
             )
 
             if success:

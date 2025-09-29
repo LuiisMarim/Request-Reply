@@ -8,13 +8,15 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 import logging
+import cv2
+import glob
 
-from domain.services.au_extractor import IAUExtractor
+from domain.services.au_extractor import IAUExtractorService
 
 logger = logging.getLogger(__name__)
 
 
-class OpenFaceAUExtractor(IAUExtractor):
+class OpenFaceAUExtractor(IAUExtractorService):
     """
     Extrator de Action Units (AUs) usando o binário OpenFace.
 
@@ -31,7 +33,40 @@ class OpenFaceAUExtractor(IAUExtractor):
         """
         self.openface_bin = openface_bin
 
-    def extract(self, image: np.ndarray) -> Dict[str, float]:
+    def extract(self, input_dir: str, output_dir: str, profile: str) -> bool:
+        """
+        Extrai AUs de todas as imagens em input_dir e salva no output_dir.
+
+        Args:
+            input_dir (str): Diretório com imagens.
+            output_dir (str): Diretório para salvar features extraídas.
+            profile (str): Perfil de execução (não utilizado aqui).
+
+        Returns:
+            bool: True se todas as extrações foram bem-sucedidas.
+        """
+        input_dir = os.path.abspath(input_dir)
+        output_dir = os.path.abspath(output_dir)
+        
+        os.makedirs(output_dir, exist_ok=True)
+        image_paths = glob.glob(os.path.join(input_dir, "**", "*.png"), recursive=True) + \
+                      glob.glob(os.path.join(input_dir, "**", "*.jpg"), recursive=True)
+        success = True
+
+        for img_path in image_paths:
+            try:
+                image = cv2.imread(img_path)
+                aus = self.extract_single(image, os.path.basename(img_path))
+                out_csv = os.path.join(output_dir, os.path.splitext(os.path.basename(img_path))[0] + ".csv")
+                pd.DataFrame([aus]).to_csv(out_csv, index=False)
+            except Exception as e:
+                logger.error("Falha ao extrair AUs de %s: %s", img_path, str(e))
+                success = False
+
+        return success
+    
+    
+    def extract_single(self, image: np.ndarray, image_name: str = "input.png") -> Dict[str, float]:
         """
         Extrai intensidades das AUs a partir de uma imagem.
 
@@ -50,12 +85,10 @@ class OpenFaceAUExtractor(IAUExtractor):
             raise ValueError("A entrada deve ser uma imagem NumPy com 3 dimensões (H, W, C).")
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            img_path = os.path.join(tmpdir, "input.png")
-            out_csv = os.path.join(tmpdir, "output.csv")
-
             try:
-                import cv2
+                img_path = os.path.join(tmpdir, image_name)
                 cv2.imwrite(img_path, image)
+                out_csv = os.path.join(tmpdir, os.path.splitext(image_name)[0] + ".csv")
                 logger.debug("Imagem temporária salva em: %s", img_path)
             except Exception as e:
                 logger.exception("Falha ao salvar imagem temporária: %s", str(e))

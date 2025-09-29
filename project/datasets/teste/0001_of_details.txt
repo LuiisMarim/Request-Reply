@@ -1,0 +1,10 @@
+Input:C:\Users\luisa\OneDrive\Documentos\Request-Reply\project\datasets\raw\autistic\0001.jpg
+Input full path:C:\Users\luisa\OneDrive\Documentos\Request-Reply\project\datasets\raw\autistic\0001.jpg
+Camera parameters:490.885,490.885,235,295
+Output csv:0001.csv
+Gaze: 0
+AUs: 1
+Landmarks 2D: 0
+Landmarks 3D: 0
+Pose: 0
+Shape parameters: 0
